@@ -1,32 +1,52 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+    <v-app>
+        <v-app-bar
+                app
+                color="primary"
+                dark
+        >
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
+
+            <v-toolbar-title class="pl-0">Title</v-toolbar-title>
+
+        </v-app-bar>
+
+        <v-navigation-drawer app clipped touchless v-model="drawer">
+            <DrawerTreeListComponent :routes="routes"/>
+        </v-navigation-drawer>
+
+
+        <v-content>
+            <router-view style="max-width: 50rem; margin:auto !important;"/>
+        </v-content>
+    </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+    import DrawerTreeListComponent from './components/DrawerTreeListComponent'
 
-#nav {
-  padding: 30px;
-}
+    export default {
+        name: 'App',
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+        components: {
+            DrawerTreeListComponent,
+        },
+        data: () => ({
+            drawer: false,
+            routes: [],
+        }),
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+        created() {
+            this.routes = this.$router.options.routes
+        },
+
+        computed: {
+
+            filteredRoutes() {
+                // let rt = this.routes.filter(route => route.meta)
+                let rt = this.routes.filter(route => route.meta && route.meta.showInNav && route.meta.showInNav() === true)
+                return rt
+            },
+        },
+    }
+</script>
